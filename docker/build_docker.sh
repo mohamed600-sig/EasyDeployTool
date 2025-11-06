@@ -71,6 +71,7 @@ create_container() {
              -v ${parent_dir}:/workspace \
              -w /workspace \
              -v /dev/bus/usb:/dev/bus/usb \
+             --user $(id -u):$(id -g) \
              -e DISPLAY=${DISPLAY} \
              -e DOCKER_USER=${USER} \
              -e USER=${USER} \

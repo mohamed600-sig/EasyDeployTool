@@ -1,11 +1,12 @@
 
 # Base image starts with CUDA
-ARG BASE_IMG=nvcr.io/nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04
-FROM ${BASE_IMG} as base
-ENV BASE_IMG=nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04
+ARG BASE_IMG=nvcr.io/nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
+FROM ${BASE_IMG} AS base
+ARG BASE_IMG
+ENV BASE_IMG=${BASE_IMG}
 
-ENV TENSORRT_VERSION=10.7.0
-ENV TENSORRT_PACAKGE_VERSION=10.7.0.23-1+cuda12.6
+ENV TENSORRT_VERSION=10.9.0
+ENV TENSORRT_PACAKGE_VERSION=10.9.0.34-1+cuda12.8
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -18,7 +19,7 @@ RUN rm /etc/apt/sources.list && \
 
 
 # Install basic dependencies
-RUN apt install -y \
+RUN apt update && apt install -y \
     build-essential \
     manpages-dev \
     wget \
@@ -53,22 +54,22 @@ RUN add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/r
 RUN apt-get update
 RUN TENSORRT_MAJOR_VERSION=`echo ${TENSORRT_VERSION} | cut -d '.' -f 1` && \
     apt-get install -y libnvinfer${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-plugin${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-dev=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-headers-dev=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-headers-plugin-dev=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-plugin-dev=${TENSORRT_PACAKGE_VERSION} \
-                       libnvonnxparsers${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
-                       libnvonnxparsers-dev=${TENSORRT_PACAKGE_VERSION} \
-                      #  libnvparsers${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
-                      #  libnvparsers-dev=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-lean${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-lean-dev=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-dispatch${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-dispatch-dev=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-vc-plugin${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-vc-plugin-dev=${TENSORRT_PACAKGE_VERSION} \
-                       libnvinfer-samples=${TENSORRT_PACAKGE_VERSION}
+    libnvinfer-plugin${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-dev=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-headers-dev=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-headers-plugin-dev=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-plugin-dev=${TENSORRT_PACAKGE_VERSION} \
+    libnvonnxparsers${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
+    libnvonnxparsers-dev=${TENSORRT_PACAKGE_VERSION} \
+    #  libnvparsers${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
+    #  libnvparsers-dev=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-lean${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-lean-dev=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-dispatch${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-dispatch-dev=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-vc-plugin${TENSORRT_MAJOR_VERSION}=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-vc-plugin-dev=${TENSORRT_PACAKGE_VERSION} \
+    libnvinfer-samples=${TENSORRT_PACAKGE_VERSION}
 
 RUN cd /usr/src/tensorrt/samples \
     && make -j
@@ -77,9 +78,13 @@ RUN cd /usr/src/tensorrt/samples \
 RUN apt-get install libassimp-dev -y
 
 RUN cd /tmp && \
-    wget https://gp.zz990099.cn/https://github.com/CVCUDA/CV-CUDA/releases/download/v0.12.0-beta/cvcuda-lib-0.12.0_beta-cuda12-x86_64-linux.deb && \
-    wget https://gp.zz990099.cn/https://github.com/CVCUDA/CV-CUDA/releases/download/v0.12.0-beta/cvcuda-dev-0.12.0_beta-cuda12-x86_64-linux.deb && \
-    dpkg -i cvcuda-lib-0.12.0_beta-cuda12-x86_64-linux.deb && \
-    dpkg -i cvcuda-dev-0.12.0_beta-cuda12-x86_64-linux.deb && \
-    rm cvcuda-lib-0.12.0_beta-cuda12-x86_64-linux.deb && \
-    rm cvcuda-dev-0.12.0_beta-cuda12-x86_64-linux.deb
+    # wget https://gp.zz990099.cn/https://github.com/CVCUDA/CV-CUDA/releases/download/v0.12.0-beta/cvcuda-lib-0.12.0_beta-cuda12-x86_64-linux.deb && \
+    # wget https://gp.zz990099.cn/https://github.com/CVCUDA/CV-CUDA/releases/download/v0.12.0-beta/cvcuda-dev-0.12.0_beta-cuda12-x86_64-linux.deb && \
+    # dpkg -i cvcuda-lib-0.12.0_beta-cuda12-x86_64-linux.deb && \
+    # dpkg -i cvcuda-dev-0.12.0_beta-cuda12-x86_64-linux.deb && \
+    wget https://github.com/CVCUDA/CV-CUDA/releases/download/v0.15.0-beta/cvcuda-lib-0.15.0-cuda12-x86_64-linux.deb && \
+    wget https://github.com/CVCUDA/CV-CUDA/releases/download/v0.15.0-beta/cvcuda-dev-0.15.0-cuda12-x86_64-linux.deb &&\
+    dpkg -i cvcuda-lib-0.15.0-cuda12-x86_64-linux.deb &&\
+    dpkg -i cvcuda-dev-0.15.0-cuda12-x86_64-linux.deb &&\
+    rm cvcuda-lib-0.15.0-cuda12-x86_64-linux.deb && \
+    rm cvcuda-dev-0.15.0-cuda12-x86_64-linux.deb
