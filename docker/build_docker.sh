@@ -3,7 +3,7 @@
 IMAGE_BASE_NAME="easy_deploy_base_dev"
 BUILT_IMAGE_TAG=""
 EXTERNAL_TAG=""
-
+BUILD_PLATFORM=""
 script_dir="$( cd "$(dirname "$0")" && pwd )"
 parent_dir="$( cd "$script_dir/../.." && pwd )"
 parent_dir_name="$(basename "$parent_dir")"
@@ -45,7 +45,14 @@ build_image() {
     echo Image: ${image_full_name} exists! Skip image building process ...
     return 1
   else
-    docker build -f "${script_dir}/${DOCKER_FILE_NAME}" -t "${image_full_name}" .
+    local platform=""
+    if [[ "$BUILD_PLATFORM"=="aarch64" ]]; then
+      platform="linux/arm64"
+    else
+      platform="linux/amd64"
+    fi
+
+    docker build  --platform $platform -f "${script_dir}/${DOCKER_FILE_NAME}" -t "${image_full_name}" .
     return 0
   fi
 }
@@ -109,36 +116,42 @@ nvidia_gpu_trt8_u2004() {
   BUILT_IMAGE_TAG=nvidia_gpu_tensorrt_trt8_u2004
   DOCKER_FILE_NAME="nvidia_gpu_tensorrt_trt8_u2004.dockerfile"
   EXTERNAL_TAG="--runtime nvidia"
+  BUILD_PLATFORM="x86_64"
 }
 
 nvidia_gpu_trt8_u2204() {
   BUILT_IMAGE_TAG=nvidia_gpu_tensorrt_trt8_u2204
   DOCKER_FILE_NAME="nvidia_gpu_tensorrt_trt8_u2204.dockerfile"
   EXTERNAL_TAG="--runtime nvidia"
+  BUILD_PLATFORM="x86_64"
 }
 
 nvidia_gpu_trt10_u2204() {
   BUILT_IMAGE_TAG=nvidia_gpu_tensorrt_trt10_u2204
   DOCKER_FILE_NAME="nvidia_gpu_tensorrt_trt10_u2204.dockerfile"
   EXTERNAL_TAG="--runtime nvidia"
+  BUILD_PLATFORM="x86_64"
 }
 
 jetson_trt8_u2004() {
   BUILT_IMAGE_TAG=jetson_tensorrt_trt8_u2004
   DOCKER_FILE_NAME="jetson_tensorrt_trt8_u2004.dockerfile"
   EXTERNAL_TAG="--runtime nvidia"
+  BUILD_PLATFORM="aarch64"
 }
 
 jetson_trt8_u2204() {
   BUILT_IMAGE_TAG=jetson_tensorrt_trt8_u2204
   DOCKER_FILE_NAME="jetson_tensorrt_trt8_u2204.dockerfile"
   EXTERNAL_TAG="--runtime nvidia"
+  BUILD_PLATFORM="aarch64"
 }
 
 jetson_trt10_u2204() {
   BUILT_IMAGE_TAG=jetson_tensorrt_trt10_u2204
   DOCKER_FILE_NAME="jetson_tensorrt_trt10_u2204.dockerfile"
   EXTERNAL_TAG="--runtime nvidia"
+  BUILD_PLATFORM="aarch64"
 }
 
 rknn_230_u2204() {
