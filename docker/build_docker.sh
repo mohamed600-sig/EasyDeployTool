@@ -46,13 +46,12 @@ build_image() {
     return 1
   else
     local platform=""
-    if [[ "$BUILD_PLATFORM"=="aarch64" ]]; then
+    if [[ "$BUILD_PLATFORM" == "aarch64" ]]; then
       platform="linux/arm64"
     else
       platform="linux/amd64"
     fi
-
-    docker build  --platform $platform -f "${script_dir}/${DOCKER_FILE_NAME}" -t "${image_full_name}" .
+    docker build  --progress=plain --platform $platform -f "${script_dir}/${DOCKER_FILE_NAME}" -t "${image_full_name}" .
     return 0
   fi
 }
