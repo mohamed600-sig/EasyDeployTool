@@ -27,6 +27,24 @@ include_directories(
 
 add_library(${PROJECT_NAME} SHARED ${source_file})
 
+if(DEFINED TENSORRT_DIR)
+    if(NOT EXISTS "${TENSORRT_DIR}")
+        message(FATAL_ERROR "TENSORRT_DIR does not exist: ${TENSORRT_DIR}")
+    endif()
+
+    if(NOT EXISTS "${TENSORRT_DIR}/include")
+        message(FATAL_ERROR "TensorRT include directory does not exist: ${TENSORRT_DIR}/include")
+    endif()
+
+    if(NOT EXISTS "${TENSORRT_DIR}/lib")
+        message(FATAL_ERROR "TensorRT lib directory does not exist: ${TENSORRT_DIR}/lib")
+    endif()
+
+    message(STATUS "Using TensorRT: ${TENSORRT_DIR}")
+
+    target_include_directories(${PROJECT_NAME} PUBLIC "${TENSORRT_DIR}/include")
+    target_link_directories(${PROJECT_NAME} PUBLIC "${TENSORRT_DIR}/lib")
+endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${CUDA_LIBRARIES}
